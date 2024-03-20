@@ -1,9 +1,10 @@
 import React from "react";
+import Header from "./Movies/Header";
 
 const Home = () => {
   return (
     <>
-      <h1>home</h1>{" "}
+      <Header />{" "}
     </>
   );
 };
