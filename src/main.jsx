@@ -10,35 +10,38 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Register from "./pages/auth/Register.jsx";
 import Login from "./pages/auth/Login.jsx";
-import PrivateRoute from './pages/auth/PrivateRoute.jsx'
+import PrivateRoute from "./pages/auth/PrivateRoute.jsx";
 import Profile from "./pages/User/Profile.jsx";
 import AllMovies from "./pages/Movies/AllMovies.jsx";
 
 // admin routes
 import AdminRoute from "./pages/Admin/AdminRoute.jsx";
 import AdminDashboard from "./pages/Admin/Dashboard/AdminDashboard.jsx";
-import GenreList from "./pages/Admin/GenreList.jsx";
 import CreateMovie from "./pages/Admin/CreateMovie.jsx";
+import GenreList from "./pages/Admin/GenreList.jsx";
+import MovieUpdate from "./pages/Admin/MovieUpdate.jsx";
+import AdminMoviesList from "./pages/Admin/AdminMoviesList.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route index={true} path="/" element={<Home />} />
-      <Route path="/login" element={<Login/>}/>
+      <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/movies" element={<AllMovies/>}/>
+      <Route path="/movies" element={<AllMovies />} />
 
-      <Route path="" element={<PrivateRoute/>}>
-        <Route path="/profile" element={<Profile/>}/>
+      <Route path="" element={<PrivateRoute />}>
+        <Route path="/profile" element={<Profile />} />
       </Route>
 
-      <Route path="" element={<AdminRoute/>}>
-        <Route path="/admin/movies/dashboard" element={<AdminDashboard/>}/>
-        <Route path="/admin/movies/genre" element={<GenreList/>}/>
-        <Route path="/admin/movies/create" element={<CreateMovie/>}/>
+      <Route path="" element={<AdminRoute />}>
+        <Route path="/admin/movies/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/movies/create" element={<CreateMovie />} />
+        <Route path="/admin/movies/genre" element={<GenreList />} />
+        <Route path="/admin/movies/update/:id" element={<MovieUpdate />} />
+        <Route path="/admin/movies-list" element={<AdminMoviesList />} />
       </Route>
     </Route>
-    
   )
 );
 

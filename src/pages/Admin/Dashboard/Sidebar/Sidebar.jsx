@@ -26,7 +26,7 @@ const Sidebar = () => {
             </li>
             <li className="text-lg -translate-x-6 hover:bg-gradient-to-b from-green-500 to-lime-400 rounded-full">
               <Link to="/admin/movies-list" className="block p-2 ml-20 mb-10">
-                Update Movie
+               Movie List
               </Link>
             </li>
             <li className="text-lg -translate-x-6 hover:bg-gradient-to-b from-green-500 to-lime-400 rounded-full">
