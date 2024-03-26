@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   useUpdateMovieMutation,
   useDeleteMovieMutation,
   useGetSpecificMovieQuery,
+  useUploadImageMutation,
 } from "../../redux/api/movie";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
@@ -21,8 +22,24 @@ const MovieUpdate = () => {
   });
 
   const [selectedImage, setSelectedImage] = useState(null);
-  const { data: initialMovieData } = useGetSpecificMovieQuery(id);
+  const { data: initialMovieData, refetch: refetchMovie } =
+    useGetSpecificMovieQuery(id);
 
+  useEffect(() => {
+    if (initialMovieData) {
+      setMovieData(initialMovieData);
+    }
+  }, [initialMovieData]);
+
+  const [updateMovie, { isLoading: isupdatingMovie }] =
+    useUpdateMovieMutation();
+  const [
+    uploadImage,
+    { isLoading: isUploadingImage, error: uploadImageErrorDetails },
+  ] = useUploadImageMutation();
+
+  const [deleteMovie] = useDeleteMovieMutation();
+  // function part
   const handleChange = (e) => {
     const { name, value } = e.target;
     setMovieData((prevDate) => ({
@@ -34,6 +51,63 @@ const MovieUpdate = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setSelectedImage(file);
+  };
+
+  const handleUpdateMovie = async () => {
+    try {
+      if (
+        !movieData.name ||
+        !movieData.year ||
+        !movieData.detail ||
+        !movieData.cast
+      ) {
+        toast.error("please fill all required filled");
+        return;
+      }
+
+      let uploadedImagePath = movieData.image;
+      if (selectedImage) {
+        const formData = new FormData();
+        formData.append("image", selectedImage);
+
+        const uploadImageResponse = await uploadImage(formData);
+
+        if (uploadImageResponse.data) {
+          uploadedImagePath = uploadImageResponse.data.image;
+        } else {
+          console.error("Failed to upload image:", uploadImageErrorDetails);
+          toast.error("Failed to upload image");
+          return;
+        }
+      }
+
+      await updateMovie({
+        id: id,
+        updatedMovie: {
+          ...movieData,
+          image: uploadedImagePath,
+        },
+      });
+
+      // Refetch movie data to ensure it's up-to-date
+      refetchMovie();
+      toast.success("movie update successfully");
+      navigate("/admin/movies-list");
+    } catch (error) {
+      console.error("failed to updat movie:", error);
+    }
+  };
+
+  const handleDeleteMovie = async () => {
+    try {
+      toast.success("movie deleted successfully");
+      await deleteMovie(id);
+      navigate("/admin/movies-list");
+      refetchMovie()
+    } catch (error) {
+      console.error("failed to delete movie", error);
+      toast.error(`failed to delete movie:${error?.message}`);
+    }
   };
 
   return (
@@ -118,15 +192,19 @@ const MovieUpdate = () => {
         </div>
         <button
           type="button"
+          onClick={handleUpdateMovie}
           className=" bg-teal-500 text-white px-4 py-2 rounded font-semibold"
+          disabled={isupdatingMovie || isUploadingImage}
         >
-          Update
+          {isupdatingMovie || isUploadingImage ? "updating..." : "update Movie"}
         </button>
         <button
           type="button"
+          onClick={handleDeleteMovie}
+          disabled={isupdatingMovie || isUploadingImage}
           className=" bg-red-500 text-white px-4 py-2 rounded ml-2 font-semibold"
         >
-          Delete
+          {isupdatingMovie || isUploadingImage ? "deleting..." : "Delete Movie"}{" "}
         </button>
       </form>
     </div>
